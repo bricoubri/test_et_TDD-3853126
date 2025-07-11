@@ -1,6 +1,8 @@
 package com.syllab.boutique.metier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
@@ -59,5 +61,7 @@ public class ProduitTest {
     var test = p.clone();
 
     assertEquals(p, test);
+    assertNotSame(p, test);
+    assertInstanceOf(Produit.class, test);
   }
 }
