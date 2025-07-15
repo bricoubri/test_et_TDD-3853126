@@ -7,11 +7,16 @@ import java.util.Map;
  * Représente un panier de site marchand.
  */
 public class Panier {
+
+  public static final String REDUCTION_5_POUR_50_CODE = "5POUR50";
+  public static final double REDUCTION_5_POUR_50_SEUIL = 50.0;
+  public static final double REDUCTION_5_POUR_50_MONTANT = 5.0;
+
   private double reduction = 0.0;
 
   public void appliquerReduction(String coupon) {
-    if ("5POUR50".equals(coupon)) {
-      this.reduction = 5;
+    if (REDUCTION_5_POUR_50_CODE.equals(coupon)) {
+      this.reduction = REDUCTION_5_POUR_50_MONTANT;
     }
   }
 
@@ -80,7 +85,7 @@ public class Panier {
         .mapToDouble(l -> l.getPrixTotal())
         .sum();
 
-    return (total >= 50) ? (total - this.reduction) : total;
+    return total - (total >= REDUCTION_5_POUR_50_SEUIL ? this.reduction : 0);
   }
 
   /**
