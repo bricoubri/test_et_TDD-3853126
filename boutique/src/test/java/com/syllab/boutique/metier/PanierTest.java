@@ -2,8 +2,11 @@ package com.syllab.boutique.metier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -44,11 +47,13 @@ public class PanierTest {
     var p2 = new Produit("P2", "L2", 5);
     var panier = new Panier();
 
-    panier.ajouter(p1, 3);
-    panier.ajouter(p2, 1);
+    var l1 = panier.ajouter(p1, 3);
+    var l2 = panier.ajouter(p2, 1);
+    var lignesPanier = Arrays.asList(l1, l2);
 
     assertEquals(11, panier.getPrixTotal(), 0.0001);
     assertFalse(panier.estVide());
+    assertIterableEquals(lignesPanier, panier.getLignes());
   }
 
   @Test
