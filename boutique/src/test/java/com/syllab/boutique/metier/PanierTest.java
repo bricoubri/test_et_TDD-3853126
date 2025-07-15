@@ -194,7 +194,7 @@ public class PanierTest {
 
     panier.ajouter(new Produit("P1", "L1", 30), 2);
 
-    panier.appliquerReduction(this.gestionnaireCoupons, REDUCTION_5_POUR_50_CODE);
+    panier.appliquerReduction(gestionnaireCoupons, REDUCTION_5_POUR_50_CODE);
 
     assertEquals(55, panier.getPrixTotal(), 0.0001);
   }
@@ -204,7 +204,7 @@ public class PanierTest {
 
     panier.ajouter(new Produit("P1", "L1", 30), 2);
 
-    panier.appliquerReduction(this.gestionnaireCoupons, "INVALIDE");
+    panier.appliquerReduction(gestionnaireCoupons, "INVALIDE");
 
     assertEquals(60, panier.getPrixTotal(), 0.0001);
   }
@@ -214,7 +214,7 @@ public class PanierTest {
 
     panier.ajouter(new Produit("P1", "L1", 30), 1);
 
-    panier.appliquerReduction(this.gestionnaireCoupons, "INVALIDE");
+    panier.appliquerReduction(gestionnaireCoupons, "INVALIDE");
 
     assertEquals(30, panier.getPrixTotal(), 0.0001);
   }
@@ -226,7 +226,7 @@ public class PanierTest {
     panier.ajouter(new Produit("P2", "L2", 1), 4);
 
     // Act
-    panier.appliquerReduction(this.gestionnaireCoupons, REDUCTION_PX3_CODE);
+    panier.appliquerReduction(gestionnaireCoupons, REDUCTION_PX3_CODE);
 
     // Assert
     assertEquals(4, ligne.getQuantite());
@@ -240,8 +240,8 @@ public class PanierTest {
     var ligne = panier.ajouter(new Produit("PX", "LX", 20), 4);
 
     // Act
-    panier.appliquerReduction(this.gestionnaireCoupons, REDUCTION_5_POUR_50_CODE);
-    panier.appliquerReduction(this.gestionnaireCoupons, REDUCTION_PX3_CODE);
+    panier.appliquerReduction(gestionnaireCoupons, REDUCTION_5_POUR_50_CODE);
+    panier.appliquerReduction(gestionnaireCoupons, REDUCTION_PX3_CODE);
 
     // Assert
     assertEquals(4, ligne.getQuantite());
@@ -253,7 +253,7 @@ public class PanierTest {
   void appliquerReduction_PX3Plus1Avec9PX_2PXOfferts() {
 
     panier.ajouter(new Produit("P2", "L2", 1), 4);
-    panier.appliquerReduction(this.gestionnaireCoupons, REDUCTION_PX3_CODE);
+    panier.appliquerReduction(gestionnaireCoupons, REDUCTION_PX3_CODE);
 
     var ligne = panier.ajouter(new Produit("PX", "LX", 20), 9);
 
@@ -268,7 +268,7 @@ public class PanierTest {
 
     panier.ajouter(new Produit("P2", "L2", 1), 4);
 
-    panier.appliquerReduction(this.gestionnaireCoupons, REDUCTION_PX3_CODE);
+    panier.appliquerReduction(gestionnaireCoupons, REDUCTION_PX3_CODE);
 
     assertEquals(3, ligne.getQuantite());
     assertEquals(60, ligne.getPrixTotal(), 0.0001);
