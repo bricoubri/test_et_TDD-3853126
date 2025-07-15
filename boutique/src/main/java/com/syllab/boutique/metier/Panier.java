@@ -5,18 +5,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.syllab.boutique.metier.coupons.IGestionnaireCoupons;
 import com.syllab.boutique.metier.coupons.IReduction;
-import com.syllab.boutique.metier.coupons.ProduitOffert;
-import com.syllab.boutique.metier.coupons.SeuilReduction;
 
 /**
  * Représente un panier de site marchand.
  */
 public class Panier {
 
-  public void appliquerReduction(String coupon) {
-    if (this.couponsReductions.containsKey(coupon)) {
-      this.reductions.add(this.couponsReductions.get(coupon));
+  public void appliquerReduction(IGestionnaireCoupons gestionnaireCoupons, String codeCoupon) {
+    IReduction reduction = gestionnaireCoupons.recupererReductionDepuisCodeCoupon(codeCoupon);
+
+    if (reduction != null) {
+      this.reductions.add(reduction);
     }
   }
 
@@ -181,10 +182,4 @@ public class Panier {
 
   private Map<Produit, Ligne> lignes = new HashMap<>();
   private List<IReduction> reductions = new ArrayList<>();
-
-  private static Map<String, IReduction> couponsReductions = new HashMap<>();
-
-  public static void referencerCoupon(String codeCoupon, IReduction coupon) {
-    couponsReductions.put(codeCoupon, coupon);
-  }
 }

@@ -17,6 +17,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
 import com.syllab.boutique.NommageRoyOsherove;
+import com.syllab.boutique.metier.coupons.GestionnaireCoupons;
+import com.syllab.boutique.metier.coupons.IGestionnaireCoupons;
 import com.syllab.boutique.metier.coupons.ProduitOffert;
 import com.syllab.boutique.metier.coupons.SeuilReduction;
 
@@ -33,13 +35,16 @@ public class PanierTest {
   static final double REDUCTION_5_POUR_50_SEUIL = 50.0;
   static final double REDUCTION_5_POUR_50_MONTANT = 5.0;
 
+  static IGestionnaireCoupons gestionnaireCoupons;
   Panier panier;
 
   @BeforeAll
   static void referencerCoupons() {
-    Panier.referencerCoupon(REDUCTION_5_POUR_50_CODE,
+    gestionnaireCoupons = new GestionnaireCoupons();
+    gestionnaireCoupons.referencerCoupon(REDUCTION_5_POUR_50_CODE,
         new SeuilReduction(REDUCTION_5_POUR_50_SEUIL, REDUCTION_5_POUR_50_MONTANT));
-    Panier.referencerCoupon(REDUCTION_PX3_CODE, new ProduitOffert(REDUCTION_PX3_REFERENCE, REDUCTION_PX3_SEUIL));
+    gestionnaireCoupons
+        .referencerCoupon(REDUCTION_PX3_CODE, new ProduitOffert(REDUCTION_PX3_REFERENCE, REDUCTION_PX3_SEUIL));
   }
 
   @BeforeEach
@@ -189,7 +194,7 @@ public class PanierTest {
 
     panier.ajouter(new Produit("P1", "L1", 30), 2);
 
-    panier.appliquerReduction(REDUCTION_5_POUR_50_CODE);
+    panier.appliquerReduction(this.gestionnaireCoupons, REDUCTION_5_POUR_50_CODE);
 
     assertEquals(55, panier.getPrixTotal(), 0.0001);
   }
@@ -199,7 +204,7 @@ public class PanierTest {
 
     panier.ajouter(new Produit("P1", "L1", 30), 2);
 
-    panier.appliquerReduction("INVALIDE");
+    panier.appliquerReduction(this.gestionnaireCoupons, "INVALIDE");
 
     assertEquals(60, panier.getPrixTotal(), 0.0001);
   }
@@ -209,7 +214,7 @@ public class PanierTest {
 
     panier.ajouter(new Produit("P1", "L1", 30), 1);
 
-    panier.appliquerReduction("INVALIDE");
+    panier.appliquerReduction(this.gestionnaireCoupons, "INVALIDE");
 
     assertEquals(30, panier.getPrixTotal(), 0.0001);
   }
@@ -221,7 +226,7 @@ public class PanierTest {
     panier.ajouter(new Produit("P2", "L2", 1), 4);
 
     // Act
-    panier.appliquerReduction(REDUCTION_PX3_CODE);
+    panier.appliquerReduction(this.gestionnaireCoupons, REDUCTION_PX3_CODE);
 
     // Assert
     assertEquals(4, ligne.getQuantite());
@@ -235,8 +240,8 @@ public class PanierTest {
     var ligne = panier.ajouter(new Produit("PX", "LX", 20), 4);
 
     // Act
-    panier.appliquerReduction(REDUCTION_5_POUR_50_CODE);
-    panier.appliquerReduction(REDUCTION_PX3_CODE);
+    panier.appliquerReduction(this.gestionnaireCoupons, REDUCTION_5_POUR_50_CODE);
+    panier.appliquerReduction(this.gestionnaireCoupons, REDUCTION_PX3_CODE);
 
     // Assert
     assertEquals(4, ligne.getQuantite());
@@ -248,7 +253,7 @@ public class PanierTest {
   void appliquerReduction_PX3Plus1Avec9PX_2PXOfferts() {
 
     panier.ajouter(new Produit("P2", "L2", 1), 4);
-    panier.appliquerReduction(REDUCTION_PX3_CODE);
+    panier.appliquerReduction(this.gestionnaireCoupons, REDUCTION_PX3_CODE);
 
     var ligne = panier.ajouter(new Produit("PX", "LX", 20), 9);
 
@@ -263,7 +268,7 @@ public class PanierTest {
 
     panier.ajouter(new Produit("P2", "L2", 1), 4);
 
-    panier.appliquerReduction(REDUCTION_PX3_CODE);
+    panier.appliquerReduction(this.gestionnaireCoupons, REDUCTION_PX3_CODE);
 
     assertEquals(3, ligne.getQuantite());
     assertEquals(60, ligne.getPrixTotal(), 0.0001);
