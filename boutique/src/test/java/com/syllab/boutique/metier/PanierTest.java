@@ -8,25 +8,51 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
 import com.syllab.boutique.NommageRoyOsherove;
+import com.syllab.boutique.metier.coupons.ProduitOffert;
+import com.syllab.boutique.metier.coupons.SeuilReduction;
 
 //@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @DisplayNameGeneration(NommageRoyOsherove.class)
 public class PanierTest {
+
+  // 1 produit offert pour 4 achetés
+  static final String REDUCTION_PX3_CODE = "PX3+1";
+  static final String REDUCTION_PX3_REFERENCE = "PX";
+  static final double REDUCTION_PX3_SEUIL = 4.0;
+  // Réduction montant
+  static final String REDUCTION_5_POUR_50_CODE = "5POUR50";
+  static final double REDUCTION_5_POUR_50_SEUIL = 50.0;
+  static final double REDUCTION_5_POUR_50_MONTANT = 5.0;
+
+  Panier panier;
+
+  @BeforeAll
+  static void referencerCoupons() {
+    Panier.referencerCoupon(REDUCTION_5_POUR_50_CODE,
+        new SeuilReduction(REDUCTION_5_POUR_50_SEUIL, REDUCTION_5_POUR_50_MONTANT));
+    Panier.referencerCoupon(REDUCTION_PX3_CODE, new ProduitOffert(REDUCTION_PX3_REFERENCE, REDUCTION_PX3_SEUIL));
+  }
+
+  @BeforeEach
+  void initPanier() {
+    this.panier = new Panier();
+  }
+
   // Initialisation
   // - Usuel
   @Test
   void initialisation_panierVide() {
-    var p = new Panier();
-
-    assertTrue(p.estVide());
-    assertEquals(0, p.getPrixTotal(), 0.0001);
-    assertFalse(p.getLignes().iterator().hasNext());
+    assertTrue(panier.estVide());
+    assertEquals(0, panier.getPrixTotal(), 0.0001);
+    assertFalse(panier.getLignes().iterator().hasNext());
   }
   // - Extrême (aucun)
   // - Erreur (aucun)
@@ -37,7 +63,6 @@ public class PanierTest {
   void ajouter_1Produit() {
     // Arrange
     var p = new Produit("AT12", "Ciment", 2);
-    var panier = new Panier();
 
     // Act
     panier.ajouter(p, 3);
@@ -51,7 +76,6 @@ public class PanierTest {
   void ajouter_2ProduitsDifferents() {
     var p1 = new Produit("P1", "L1", 2);
     var p2 = new Produit("P2", "L2", 5);
-    var panier = new Panier();
 
     var l1 = panier.ajouter(p1, 3);
     var l2 = panier.ajouter(p2, 1);
@@ -65,7 +89,6 @@ public class PanierTest {
   @DisplayName("(ajouter) 1 produit 2 fois -> additionne les quantités")
   void ajouter_1Produit2fois_AdditionneLesQuantites() {
     var p1 = new Produit("P1", "L1", 2);
-    var panier = new Panier();
     var l = panier.new Ligne(p1, 4);
 
     panier.ajouter(p1, 3);
@@ -81,7 +104,6 @@ public class PanierTest {
   @Test
   void ajouter_quantite0_leveIllegalArgumentException() {
     var p1 = new Produit("P1", "L1", 2);
-    var panier = new Panier();
 
     Executable act = () -> panier.ajouter(p1, 0);
 
@@ -91,7 +113,6 @@ public class PanierTest {
   @Test
   void ajouter_quantiteNegative_leveIllegalArgumentException() {
     var p1 = new Produit("P1", "L1", 2);
-    var panier = new Panier();
 
     Executable act = () -> panier.ajouter(p1, -3);
 
@@ -100,7 +121,6 @@ public class PanierTest {
 
   @Test
   void ajouter_produitNull_leveNullPointerException() {
-    var panier = new Panier();
 
     Executable act = () -> panier.ajouter(null, 2);
 
@@ -112,7 +132,6 @@ public class PanierTest {
   @Test
   void diminuer_produitEnQuantite2OuPlus() {
     var p = new Produit("P1", "L1", 2);
-    var panier = new Panier();
 
     panier.ajouter(p, 3);
 
@@ -126,7 +145,6 @@ public class PanierTest {
   @Test
   void diminuer_dernierProduitEnQuantite1_panierVide() {
     var p = new Produit("P1", "L1", 2);
-    var panier = new Panier();
 
     panier.ajouter(p, 1);
 
@@ -140,7 +158,6 @@ public class PanierTest {
   void diminuer_avantDernierProduitEnQuantite1_retireLeProduit() {
     var p1 = new Produit("P1", "L1", 2);
     var p2 = new Produit("P2", "L2", 5);
-    var panier = new Panier();
 
     panier.ajouter(p1, 3);
     panier.ajouter(p2, 1);
@@ -156,7 +173,6 @@ public class PanierTest {
   void diminuer_produitAbsentDuPanier_leveIllegalArgumentException() {
     var p1 = new Produit("P1", "L1", 2);
     var p2 = new Produit("P2", "L2", 5);
-    var panier = new Panier();
 
     panier.ajouter(p1, 3);
 
@@ -167,18 +183,16 @@ public class PanierTest {
 
   @Test
   void appliquerReduction_Total60Coupon5Pour50_Total55() {
-    var panier = new Panier();
 
     panier.ajouter(new Produit("P1", "L1", 30), 2);
 
-    panier.appliquerReduction(Panier.REDUCTION_5_POUR_50_CODE);
+    panier.appliquerReduction(REDUCTION_5_POUR_50_CODE);
 
     assertEquals(55, panier.getPrixTotal(), 0.0001);
   }
 
   @Test
   void appliquerReduction_Total60CouponInvalide_Total60() {
-    var panier = new Panier();
 
     panier.ajouter(new Produit("P1", "L1", 30), 2);
 
@@ -189,7 +203,6 @@ public class PanierTest {
 
   @Test
   void appliquerReduction_Total30Coupon5Pour50_Total30() {
-    var panier = new Panier();
 
     panier.ajouter(new Produit("P1", "L1", 30), 1);
 
@@ -201,12 +214,11 @@ public class PanierTest {
   @Test
   void appliquerReduction_PX3Plus1Avec4PX_1PXOffert() {
     // Arrange
-    var panier = new Panier();
     var ligne = panier.ajouter(new Produit("PX", "LX", 20), 4);
     panier.ajouter(new Produit("P2", "L2", 1), 4);
 
     // Act
-    panier.appliquerReduction(Panier.REDUCTION_PX3_CODE);
+    panier.appliquerReduction(REDUCTION_PX3_CODE);
 
     // Assert
     assertEquals(4, ligne.getQuantite());
@@ -217,12 +229,11 @@ public class PanierTest {
   @Test
   void appliquerReduction_PX3Plus1Et5Pour50Total60_PXOffertEtTotal55() {
     // Arrange
-    var panier = new Panier();
     var ligne = panier.ajouter(new Produit("PX", "LX", 20), 4);
 
     // Act
-    panier.appliquerReduction(Panier.REDUCTION_5_POUR_50_CODE);
-    panier.appliquerReduction(Panier.REDUCTION_PX3_CODE);
+    panier.appliquerReduction(REDUCTION_5_POUR_50_CODE);
+    panier.appliquerReduction(REDUCTION_PX3_CODE);
 
     // Assert
     assertEquals(4, ligne.getQuantite());
@@ -232,10 +243,9 @@ public class PanierTest {
 
   @Test
   void appliquerReduction_PX3Plus1Avec9PX_2PXOfferts() {
-    var panier = new Panier();
 
     panier.ajouter(new Produit("P2", "L2", 1), 4);
-    panier.appliquerReduction(Panier.REDUCTION_PX3_CODE);
+    panier.appliquerReduction(REDUCTION_PX3_CODE);
 
     var ligne = panier.ajouter(new Produit("PX", "LX", 20), 9);
 
@@ -246,12 +256,11 @@ public class PanierTest {
 
   @Test
   void appliquerReduction_PX3Plus1Avec3PX_PasDePXOffert() {
-    var panier = new Panier();
     var ligne = panier.ajouter(new Produit("PX", "LX", 20), 3);
 
     panier.ajouter(new Produit("P2", "L2", 1), 4);
 
-    panier.appliquerReduction(Panier.REDUCTION_PX3_CODE);
+    panier.appliquerReduction(REDUCTION_PX3_CODE);
 
     assertEquals(3, ligne.getQuantite());
     assertEquals(60, ligne.getPrixTotal(), 0.0001);

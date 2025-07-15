@@ -179,24 +179,12 @@ public class Panier {
     private int quantite;
   }
 
-  public static final String REDUCTION_PX3_CODE = "PX3+1";
-  public static final String REDUCTION_PX3_REFERENCE = "PX";
-  public static final double REDUCTION_PX3_SEUIL = 4.0;
-  public static final String REDUCTION_5_POUR_50_CODE = "5POUR50";
-  public static final double REDUCTION_5_POUR_50_SEUIL = 50.0;
-  public static final double REDUCTION_5_POUR_50_MONTANT = 5.0;
-
   private Map<Produit, Ligne> lignes = new HashMap<>();
   private List<IReduction> reductions = new ArrayList<>();
 
-  private Map<String, IReduction> couponsReductions = initCouponsReductions();
+  private static Map<String, IReduction> couponsReductions = new HashMap<>();
 
-  private Map<String, IReduction> initCouponsReductions() {
-    Map<String, IReduction> coupons = new HashMap<>();
-    coupons.put(REDUCTION_5_POUR_50_CODE, new SeuilReduction(REDUCTION_5_POUR_50_SEUIL, REDUCTION_5_POUR_50_MONTANT));
-    coupons.put(REDUCTION_PX3_CODE, new ProduitOffert(REDUCTION_PX3_REFERENCE, REDUCTION_PX3_SEUIL));
-
-    return coupons;
+  public static void referencerCoupon(String codeCoupon, IReduction coupon) {
+    couponsReductions.put(codeCoupon, coupon);
   }
-
 }
