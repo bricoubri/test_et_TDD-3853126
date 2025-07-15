@@ -164,7 +164,7 @@ public class PanierTest {
 
     panier.ajouter(new Produit("P1", "L1", 30), 2);
 
-    panier.appliquerReduction("5POUR50");
+    panier.appliquerReduction(Panier.REDUCTION_5_POUR_50_CODE);
 
     assertEquals(55, panier.getPrixTotal(), 0.0001);
   }
@@ -199,7 +199,7 @@ public class PanierTest {
     panier.ajouter(new Produit("P2", "L2", 1), 4);
 
     // Act
-    panier.appliquerReduction("PX3+1");
+    panier.appliquerReduction(Panier.REDUCTION_PX3_CODE);
 
     // Assert
     assertEquals(4, ligne.getQuantite());
@@ -215,7 +215,7 @@ public class PanierTest {
 
     // Act
     panier.appliquerReduction(Panier.REDUCTION_5_POUR_50_CODE);
-    panier.appliquerReduction("PX3+1");
+    panier.appliquerReduction(Panier.REDUCTION_PX3_CODE);
 
     // Assert
     assertEquals(4, ligne.getQuantite());
@@ -228,7 +228,7 @@ public class PanierTest {
     var panier = new Panier();
 
     panier.ajouter(new Produit("P2", "L2", 1), 4);
-    panier.appliquerReduction("PX3+1");
+    panier.appliquerReduction(Panier.REDUCTION_PX3_CODE);
 
     var ligne = panier.ajouter(new Produit("PX", "LX", 20), 9);
 
@@ -244,7 +244,7 @@ public class PanierTest {
 
     panier.ajouter(new Produit("P2", "L2", 1), 4);
 
-    panier.appliquerReduction("PX3+1");
+    panier.appliquerReduction(Panier.REDUCTION_PX3_CODE);
 
     assertEquals(3, ligne.getQuantite());
     assertEquals(60, ligne.getPrixTotal(), 0.0001);
