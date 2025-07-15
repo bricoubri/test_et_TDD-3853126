@@ -8,6 +8,7 @@ import java.util.Map;
  */
 public class Panier {
 
+  public static final String REDUCTION_PX3 = "PX3+1";
   public static final String REDUCTION_5_POUR_50_CODE = "5POUR50";
   public static final double REDUCTION_5_POUR_50_SEUIL = 50.0;
   public static final double REDUCTION_5_POUR_50_MONTANT = 5.0;
@@ -17,6 +18,12 @@ public class Panier {
   public void appliquerReduction(String coupon) {
     if (REDUCTION_5_POUR_50_CODE.equals(coupon)) {
       this.reduction = REDUCTION_5_POUR_50_MONTANT;
+    } else if (REDUCTION_PX3.equals(coupon)) {
+      for (var ligne : this.getLignes()) {
+        if ("PX".equals(ligne.getProduit().getReference())) {
+          ligne.setSeuilQuantiteOfferte(4);
+        }
+      }
     }
   }
 
@@ -50,6 +57,9 @@ public class Panier {
 
     if (ligne == null) {
       ligne = new Ligne(produit, quantite);
+      if ("PX".equals(ligne.getProduit().getReference())) {
+        ligne.setSeuilQuantiteOfferte(4);
+      }
       this.lignes.put(produit, ligne);
     } else {
       ligne.quantite += quantite;
@@ -113,6 +123,10 @@ public class Panier {
       this.quantite = quantite;
     }
 
+    public void setSeuilQuantiteOfferte(int seuilQuantiteOfferte) {
+      this.seuilQuantiteOfferte = seuilQuantiteOfferte;
+    }
+
     /**
      * Obtient la quantité du produit actuellement présente dans le panier.
      * 
@@ -138,7 +152,9 @@ public class Panier {
      *         quantité.
      */
     public double getPrixTotal() {
-      return (this.produit.getPrix() * this.quantite);
+      int quantiteOfferte = this.seuilQuantiteOfferte > 0 ? this.quantite / this.seuilQuantiteOfferte : 0;
+
+      return (this.produit.getPrix() * (this.quantite - quantiteOfferte));
     }
 
     /**
@@ -168,6 +184,7 @@ public class Panier {
 
     private Produit produit;
     private int quantite;
+    private int seuilQuantiteOfferte = 0;
   }
 
   private Map<Produit, Ligne> lignes = new HashMap<>();
