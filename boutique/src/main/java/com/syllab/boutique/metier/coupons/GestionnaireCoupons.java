@@ -19,6 +19,13 @@ public class GestionnaireCoupons implements IGestionnaireCoupons {
 
   @Override
   public void referencerCoupon(String codeCoupon, IReduction reduction) {
+    if (codeCoupon.isEmpty()) {
+      throw new IllegalArgumentException();
+    }
+    if (reduction == null) {
+      throw new NullPointerException();
+    }
+
     this.coupons.put(codeCoupon, reduction);
   }
 

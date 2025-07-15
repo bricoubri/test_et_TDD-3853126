@@ -16,6 +16,11 @@ public class SeuilReduction implements IReduction {
    * @param montantReduction montant de la réduction accordée
    */
   public SeuilReduction(double seuilReduction, double montantReduction) {
+    if (montantReduction >= seuilReduction || montantReduction <= 0) {
+      throw new IllegalArgumentException(
+          "Le montant de la réduction doit être strictement positif et inférieur au seuil.");
+    }
+
     this.seuilReduction = seuilReduction;
     this.montantReduction = montantReduction;
   }
