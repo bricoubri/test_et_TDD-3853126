@@ -156,4 +156,8 @@ public class Panier {
   }
 
   private Map<Produit, Ligne> lignes = new HashMap<>();
+
+  public void appliquerCouponReduction(String string) {
+
+  }
 }
