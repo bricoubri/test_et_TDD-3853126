@@ -9,8 +9,10 @@ import java.util.Map;
 public class Panier {
   private double reduction = 0.0;
 
-  public void appliquerReduction(String string) {
-    this.reduction = 5;
+  public void appliquerReduction(String coupon) {
+    if ("5POUR50".equals(coupon)) {
+      this.reduction = 5;
+    }
   }
 
   /**
@@ -74,9 +76,11 @@ public class Panier {
    * @return Montant total du panier.
    */
   public double getPrixTotal() {
-    return this.lignes.values().stream()
+    var total = this.lignes.values().stream()
         .mapToDouble(l -> l.getPrixTotal())
-        .sum() - this.reduction;
+        .sum();
+
+    return (total >= 50) ? (total - this.reduction) : total;
   }
 
   /**
